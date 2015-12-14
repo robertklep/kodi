@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import xbmc, xbmcgui, xbmcvfs
+import xbmc, xbmcgui, xbmcvfs, glob, os.path
 
 # Get the necessary properties
 fullpath   = xbmc.getInfoLabel('ListItem.FilenameAndPath')
@@ -13,6 +13,11 @@ if not filename or not xbmcgui.Dialog().ok('Are you sure?', 'Do you want to dele
 
 # Delete the file from the filesystem.
 xbmcvfs.delete(fullpath)
+
+# Remove any subtitle files
+root, ext = os.path.splitext(fullpath)
+for subtitle in glob.glob(root + '*.srt'):
+    xbmcvfs.delete(subtitle)
 
 # Also delete it from the library.
 rpc = '{ "jsonrpc": "2.0", "method": "VideoLibrary.RemoveEpisode", "params" : { "episodeid": %s }, "id" : 1 }' % dbid
